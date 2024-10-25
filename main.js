@@ -100,12 +100,13 @@ myText.visible = false;
 const bttn = document.querySelector("#startBttn");
 
 let question = false;
-let rotationSpeed = 5; // Initial rotation speed
-let speedMultiplier = 1; // Speed multiplier to gradually increase
-let maxRotation = 6 * Math.PI + Math.PI; // Target rotation (90 degrees in radians)
-let rotatedAmount = 0; // Track how much the model has rotated
+let rotationSpeed = 5;
+let speedMultiplier = 1;
+let maxRotation = 6 * Math.PI + Math.PI;
+let rotatedAmount = 0;
 function answer() {
   camera.position.set(0, 100, 300);
+  bttn.innerText = "Reset";
   if (rotatedAmount < maxRotation) {
     speedMultiplier += 5;
     setTimeout(() => {
@@ -131,15 +132,15 @@ function millenniumPuzzle() {
     rotationSpeed = 0.01;
     speedMultiplier = 1;
     rotatedAmount = 0;
-    if (model) {
-      console.log("works");
-      model.position.set(0, 0, 0);
-    }
   }
   renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(millenniumPuzzle);
 function setQuestion() {
-  question = !question;
+  if (!question) {
+    question = !question;
+  } else {
+    location.reload();
+  }
 }
 bttn.addEventListener("click", setQuestion);
