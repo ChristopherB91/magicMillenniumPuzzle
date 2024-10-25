@@ -6,3 +6,11 @@ body {
 button {
   position: absolute;
 }
+
+#resetBttn {
+  display: none;
+}
+
+#startBttn {
+  display: block;
+}
