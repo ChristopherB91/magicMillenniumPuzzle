@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { GLTFLoader, OrbitControls } from "three/examples/jsm/Addons.js";
+import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import { Text } from "troika-three-text";
 
 const scene = new THREE.Scene();
@@ -14,7 +14,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 document.body.appendChild(renderer.domElement);
 
-camera.position.set(0, 2, 600);
+camera.position.set(0, 3, 600);
+camera.lookAt(0, 3.5, 1);
 
 const loader = new GLTFLoader();
 let model;
@@ -38,16 +39,6 @@ light.position.set(5, 5, 5);
 const light2 = new THREE.DirectionalLight(0xffffff, 10);
 light2.position.set(-5, -5, -5);
 scene.add(light, light2);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-
-controls.update();
-
-function millenniumPuzzle() {
-  controls.update();
-  renderer.render(scene, camera);
-}
-renderer.setAnimationLoop(millenniumPuzzle);
 
 function randomTxt() {
   let answerType;
@@ -94,16 +85,61 @@ function randomTxt() {
       console.log("error");
       return;
   }
-  return answerType[Math.floor(Math.random() * answerType.length - 1)];
+  return answerType[Math.floor(Math.random() * answerType.length)];
 }
 
 const myText = new Text();
 scene.add(myText);
 
 myText.text = randomTxt();
-myText.fontSize = 30;
-myText.position.set(5, 5, 5);
+myText.fontSize = 15;
+myText.position.set(-80, 85, 150);
 myText.color = 0xffffff;
+myText.visible = false;
 
-// author credits
-// "Millennium Puzzle (Yugioh)" (https://skfb.ly/6Rr9W) by Yanez Designs is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/)
+const bttn = document.querySelector("#startBttn");
+
+let question = false;
+let rotationSpeed = 5; // Initial rotation speed
+let speedMultiplier = 1; // Speed multiplier to gradually increase
+let maxRotation = 6 * Math.PI + Math.PI; // Target rotation (90 degrees in radians)
+let rotatedAmount = 0; // Track how much the model has rotated
+function answer() {
+  camera.position.set(0, 100, 300);
+  if (rotatedAmount < maxRotation) {
+    speedMultiplier += 5;
+    setTimeout(() => {
+      if (model) {
+        model.position.set(0, 0, 0);
+        let rotationStep = rotationSpeed * speedMultiplier;
+        model.rotation.y += rotationStep;
+        rotatedAmount += rotationStep;
+      }
+      setTimeout(() => {
+        myText.visible = true;
+      }, 3000);
+    }, 2000);
+  }
+}
+
+function millenniumPuzzle() {
+  if (question) {
+    answer();
+  } else {
+    camera.position.set(0, 3, 600);
+    camera.lookAt(0, 3.5, 1);
+    rotationSpeed = 0.01;
+    speedMultiplier = 1;
+    rotatedAmount = 0;
+    if (model) {
+      console.log("works");
+      model.position.set(0, 0, 0);
+    }
+  }
+  renderer.render(scene, camera);
+}
+renderer.setAnimationLoop(millenniumPuzzle);
+function setQuestion() {
+  question = !question;
+}
+bttn.addEventListener("click", setQuestion);
